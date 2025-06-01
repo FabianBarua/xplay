@@ -1,0 +1,34 @@
+{
+  "name": "xplay",
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "build": "rspeedy build",
+    "check": "biome check --write",
+    "dev": "rspeedy dev",
+    "format": "prettier --write .",
+    "preview": "rspeedy preview",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@lynx-js/react": "^0.109.1"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "^1.9.4",
+    "@lynx-js/qrcode-rsbuild-plugin": "^0.3.6",
+    "@lynx-js/react-rsbuild-plugin": "^0.10.2",
+    "@lynx-js/rspeedy": "^0.9.8",
+    "@lynx-js/types": "3.3.0",
+    "@testing-library/jest-dom": "^6.6.3",
+    "@types/react": "^18.3.22",
+    "jsdom": "^26.1.0",
+    "prettier": "^3.5.3",
+    "typescript": "~5.8.3",
+    "vitest": "^3.1.4"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "private": true,
+  "packageManager": "pnpm@10.10.0+sha512.d615db246fe70f25dcfea6d8d73dee782ce23e2245e3c4f6f888249fb568149318637dca73c2c5c8ef2a4ca0d5657fb9567188bfab47f566d1ee6ce987815c39"
+}
