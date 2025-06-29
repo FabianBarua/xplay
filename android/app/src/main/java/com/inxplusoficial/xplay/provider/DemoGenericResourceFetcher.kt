@@ -25,7 +25,7 @@ class DemoGenericResourceFetcher : LynxGenericResourceFetcher() {
             callback.onResponse(
                 LynxResourceResponse.onFailed(
                     Throwable("request is null!")
-                )
+                ) as LynxResourceResponse<ByteArray>?
             )
             return
         }
@@ -45,17 +45,17 @@ class DemoGenericResourceFetcher : LynxGenericResourceFetcher() {
                         )
                     } else {
                         callback.onResponse(
-                            LynxResourceResponse.onFailed(Throwable("response body is null."))
+                            LynxResourceResponse.onFailed(Throwable("response body is null.")) as LynxResourceResponse<ByteArray>?
                         )
                     }
                 } catch (e: IOException) {
                     e.printStackTrace()
-                    callback.onResponse(LynxResourceResponse.onFailed(e))
+                    callback.onResponse(LynxResourceResponse.onFailed(e) as LynxResourceResponse<ByteArray>?)
                 }
             }
 
             override fun onFailure(call: Call<ResponseBody?>, throwable: Throwable) {
-                callback.onResponse(LynxResourceResponse.onFailed(throwable))
+                callback.onResponse(LynxResourceResponse.onFailed(throwable) as LynxResourceResponse<ByteArray>?)
             }
         })
     }
@@ -64,7 +64,7 @@ class DemoGenericResourceFetcher : LynxGenericResourceFetcher() {
         request: LynxResourceRequest, callback: LynxResourceCallback<String>
     ) {
         callback.onResponse(
-            LynxResourceResponse.onFailed(Throwable("fetchResourcePath not supported."))
+            LynxResourceResponse.onFailed(Throwable("fetchResourcePath not supported.")) as LynxResourceResponse<String>?
         )
     }
 

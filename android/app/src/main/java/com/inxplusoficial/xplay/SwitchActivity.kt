@@ -2,6 +2,7 @@ package com.inxplusoficial.xplay
 
 import android.app.Activity
 import android.os.Bundle
+import com.inxplusoficial.xplay.provider.DemoTemplateProvider
 import com.lynx.tasm.LynxView
 import com.lynx.tasm.LynxViewBuilder
 import com.lynx.tasm.TemplateData
@@ -26,7 +27,7 @@ class SwitchActivity : Activity() {
 
     private fun buildLynxView(): LynxView {
         val viewBuilder = LynxViewBuilder()
-        viewBuilder.setTemplateProvider(DemoTemplateProvider(this))
+        viewBuilder.setTemplateProvider(DemoTemplateProvider())
         return viewBuilder.build(this)
     }
 }

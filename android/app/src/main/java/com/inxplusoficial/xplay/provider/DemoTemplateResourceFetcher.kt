@@ -1,9 +1,9 @@
-// Copyright 2025 The Lynx Authors. All rights reserved.
-// Licensed under the Apache License Version 2.0 that can be found in the
-// LICENSE file in the root directory of this source tree.
 package com.inxplusoficial.xplay.provider
 
 import android.content.Context
+import com.inxplusoficial.xplay.Helpers.getAssetFilename
+import com.inxplusoficial.xplay.Helpers.isAssetFilename
+import com.inxplusoficial.xplay.Helpers.readFileFromAssets
 import com.lynx.tasm.core.LynxThreadPool
 import com.lynx.tasm.resourceprovider.LynxResourceCallback
 import com.lynx.tasm.resourceprovider.LynxResourceRequest
@@ -19,11 +19,10 @@ import retrofit2.Retrofit
 import java.io.IOException
 import java.util.concurrent.TimeUnit
 
-// Se você estiver usando a versão Kotlin de Helpers, use HelpersKt
 class DemoTemplateResourceFetcher(context: Context) : LynxTemplateResourceFetcher() {
-    private val mApplicationContext: Context = context.applicationContext
 
-    // Cria e executa a chamada HTTP com Retrofit
+    private val appContext = context.applicationContext
+
     private fun requestResource(
         request: LynxResourceRequest,
         callback: Callback<ResponseBody>
@@ -34,7 +33,7 @@ class DemoTemplateResourceFetcher(context: Context) : LynxTemplateResourceFetche
             .build()
 
         val retrofit = Retrofit.Builder()
-            .baseUrl("https://example.com/") // Essa base é obrigatória pelo Retrofit
+            .baseUrl("https://example.com/")
             .client(client)
             .callbackExecutor(LynxThreadPool.getBriefIOExecutor())
             .build()
@@ -50,42 +49,41 @@ class DemoTemplateResourceFetcher(context: Context) : LynxTemplateResourceFetche
     ) {
         if (request == null) {
             callback.onResponse(
-                LynxResourceResponse.onFailed(
-                    Throwable("request is null!")
-                )
+                LynxResourceResponse.onFailed(Throwable("request is null!")) as LynxResourceResponse<TemplateProviderResult>?
             )
             return
         }
 
         val url = request.url
         if (isAssetFilename(url)) {
-            val assetPath: String = getAssetFilename(url)
+            val assetPath = getAssetFilename(url)
             readBundleFromAssets(assetPath, callback)
             return
         }
 
-        requestResource(request, object : Callback<ResponseBody?> {
-            override fun onResponse(call: Call<ResponseBody?>, response: Response<ResponseBody?>) {
-                if (response.body() != null) {
+        requestResource(request, object : Callback<ResponseBody> {
+            override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
+                response.body()?.let {
                     try {
-                        val result =
-                            TemplateProviderResult.fromBinary(response.body()!!.bytes())
-                        callback.onResponse(LynxResourceResponse.onSuccess(result))
+                        val result = TemplateProviderResult.fromBinary(it.bytes())
+                        callback.onResponse(
+                            LynxResourceResponse.onSuccess<TemplateProviderResult>(result)
+                        )
                     } catch (e: IOException) {
                         e.printStackTrace()
-                        callback.onResponse(LynxResourceResponse.onFailed(e))
+                        callback.onResponse(LynxResourceResponse.onFailed(e) as LynxResourceResponse<TemplateProviderResult>?)
                     }
-                } else {
+                } ?: run {
                     callback.onResponse(
                         LynxResourceResponse.onFailed(
                             Throwable("response body is null.")
-                        )
+                        ) as LynxResourceResponse<TemplateProviderResult>?
                     )
                 }
             }
 
-            override fun onFailure(call: Call<ResponseBody?>, throwable: Throwable) {
-                callback.onResponse(LynxResourceResponse.onFailed(throwable))
+            override fun onFailure(call: Call<ResponseBody>, throwable: Throwable) {
+                callback.onResponse(LynxResourceResponse.onFailed(throwable) as LynxResourceResponse<TemplateProviderResult>?)
             }
         })
     }
@@ -95,19 +93,15 @@ class DemoTemplateResourceFetcher(context: Context) : LynxTemplateResourceFetche
         callback: LynxResourceCallback<TemplateProviderResult>
     ) {
         LynxThreadPool.getBriefIOExecutor().execute {
-            val data: ByteArray = readFileFromAssets(mApplicationContext, assetPath)
+            val data = readFileFromAssets(appContext, assetPath)
             if (data != null) {
                 val result = TemplateProviderResult.fromBinary(data)
                 callback.onResponse(
-                    LynxResourceResponse.onSuccess(
-                        result
-                    )
+                    LynxResourceResponse.onSuccess<TemplateProviderResult>(result)
                 )
             } else {
                 callback.onResponse(
-                    LynxResourceResponse.onFailed(
-                        Throwable("Unable to read file from assets.")
-                    )
+                    LynxResourceResponse.onFailed(Throwable("Unable to read file from assets.")) as LynxResourceResponse<TemplateProviderResult>?
                 )
             }
         }
@@ -119,37 +113,33 @@ class DemoTemplateResourceFetcher(context: Context) : LynxTemplateResourceFetche
     ) {
         if (request == null) {
             callback.onResponse(
-                LynxResourceResponse.onFailed(
-                    Throwable("request is null!")
-                )
+                LynxResourceResponse.onFailed(Throwable("request is null!")) as LynxResourceResponse<ByteArray>?
             )
             return
         }
 
-        requestResource(request, object : Callback<ResponseBody?> {
-            override fun onResponse(call: Call<ResponseBody?>, response: Response<ResponseBody?>) {
+        requestResource(request, object : Callback<ResponseBody> {
+            override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
                 try {
-                    if (response.body() != null) {
+                    response.body()?.let {
                         callback.onResponse(
-                            LynxResourceResponse.onSuccess(
-                                response.body()!!.bytes()
-                            )
+                            LynxResourceResponse.onSuccess<ByteArray>(it.bytes())
                         )
-                    } else {
+                    } ?: run {
                         callback.onResponse(
                             LynxResourceResponse.onFailed(
                                 Throwable("response body is null.")
-                            )
+                            ) as LynxResourceResponse<ByteArray>?
                         )
                     }
                 } catch (e: IOException) {
                     e.printStackTrace()
-                    callback.onResponse(LynxResourceResponse.onFailed(e))
+                    callback.onResponse(LynxResourceResponse.onFailed(e) as LynxResourceResponse<ByteArray>?)
                 }
             }
 
-            override fun onFailure(call: Call<ResponseBody?>, throwable: Throwable) {
-                callback.onResponse(LynxResourceResponse.onFailed(throwable))
+            override fun onFailure(call: Call<ResponseBody>, throwable: Throwable) {
+                callback.onResponse(LynxResourceResponse.onFailed(throwable) as LynxResourceResponse<ByteArray>?)
             }
         })
     }
