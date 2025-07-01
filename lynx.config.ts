@@ -13,4 +13,11 @@ export default defineConfig({
     }),
     pluginReactLynx(),
   ],
+  tools: {
+    rspack: {
+      output: {
+        iife: false
+      }
+    }
+  }
 })
