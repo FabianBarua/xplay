@@ -19,6 +19,7 @@ import retrofit2.Retrofit
 import java.io.IOException
 import java.util.concurrent.TimeUnit
 
+@Suppress("UNCHECKED_CAST")
 class DemoTemplateResourceFetcher(context: Context) : LynxTemplateResourceFetcher() {
 
     private val appContext = context.applicationContext
@@ -49,15 +50,15 @@ class DemoTemplateResourceFetcher(context: Context) : LynxTemplateResourceFetche
     ) {
         if (request == null) {
             callback.onResponse(
-                LynxResourceResponse.onFailed(Throwable("request is null!")) as LynxResourceResponse<TemplateProviderResult>?
+                LynxResourceResponse.onFailed(Throwable("request is null!"))
+                        as LynxResourceResponse<TemplateProviderResult>
             )
             return
         }
 
         val url = request.url
         if (isAssetFilename(url)) {
-            val assetPath = getAssetFilename(url)
-            readBundleFromAssets(assetPath, callback)
+            readBundleFromAssets(getAssetFilename(url), callback)
             return
         }
 
@@ -67,23 +68,29 @@ class DemoTemplateResourceFetcher(context: Context) : LynxTemplateResourceFetche
                     try {
                         val result = TemplateProviderResult.fromBinary(it.bytes())
                         callback.onResponse(
-                            LynxResourceResponse.onSuccess<TemplateProviderResult>(result)
+                            LynxResourceResponse.onSuccess(result)
                         )
                     } catch (e: IOException) {
                         e.printStackTrace()
-                        callback.onResponse(LynxResourceResponse.onFailed(e) as LynxResourceResponse<TemplateProviderResult>?)
+                        callback.onResponse(
+                            LynxResourceResponse.onFailed(e)
+                                    as LynxResourceResponse<TemplateProviderResult>
+                        )
                     }
                 } ?: run {
                     callback.onResponse(
                         LynxResourceResponse.onFailed(
                             Throwable("response body is null.")
-                        ) as LynxResourceResponse<TemplateProviderResult>?
+                        ) as LynxResourceResponse<TemplateProviderResult>
                     )
                 }
             }
 
             override fun onFailure(call: Call<ResponseBody>, throwable: Throwable) {
-                callback.onResponse(LynxResourceResponse.onFailed(throwable) as LynxResourceResponse<TemplateProviderResult>?)
+                callback.onResponse(
+                    LynxResourceResponse.onFailed(throwable)
+                            as LynxResourceResponse<TemplateProviderResult>
+                )
             }
         })
     }
@@ -97,11 +104,13 @@ class DemoTemplateResourceFetcher(context: Context) : LynxTemplateResourceFetche
             if (data != null) {
                 val result = TemplateProviderResult.fromBinary(data)
                 callback.onResponse(
-                    LynxResourceResponse.onSuccess<TemplateProviderResult>(result)
+                    LynxResourceResponse.onSuccess(result)
                 )
             } else {
                 callback.onResponse(
-                    LynxResourceResponse.onFailed(Throwable("Unable to read file from assets.")) as LynxResourceResponse<TemplateProviderResult>?
+                    LynxResourceResponse.onFailed(
+                        Throwable("Unable to read file from assets.")
+                    ) as LynxResourceResponse<TemplateProviderResult>
                 )
             }
         }
@@ -113,7 +122,8 @@ class DemoTemplateResourceFetcher(context: Context) : LynxTemplateResourceFetche
     ) {
         if (request == null) {
             callback.onResponse(
-                LynxResourceResponse.onFailed(Throwable("request is null!")) as LynxResourceResponse<ByteArray>?
+                LynxResourceResponse.onFailed(Throwable("request is null!"))
+                        as LynxResourceResponse<ByteArray>
             )
             return
         }
@@ -123,23 +133,29 @@ class DemoTemplateResourceFetcher(context: Context) : LynxTemplateResourceFetche
                 try {
                     response.body()?.let {
                         callback.onResponse(
-                            LynxResourceResponse.onSuccess<ByteArray>(it.bytes())
+                            LynxResourceResponse.onSuccess(it.bytes())
                         )
                     } ?: run {
                         callback.onResponse(
                             LynxResourceResponse.onFailed(
                                 Throwable("response body is null.")
-                            ) as LynxResourceResponse<ByteArray>?
+                            ) as LynxResourceResponse<ByteArray>
                         )
                     }
                 } catch (e: IOException) {
                     e.printStackTrace()
-                    callback.onResponse(LynxResourceResponse.onFailed(e) as LynxResourceResponse<ByteArray>?)
+                    callback.onResponse(
+                        LynxResourceResponse.onFailed(e)
+                                as LynxResourceResponse<ByteArray>
+                    )
                 }
             }
 
             override fun onFailure(call: Call<ResponseBody>, throwable: Throwable) {
-                callback.onResponse(LynxResourceResponse.onFailed(throwable) as LynxResourceResponse<ByteArray>?)
+                callback.onResponse(
+                    LynxResourceResponse.onFailed(throwable)
+                            as LynxResourceResponse<ByteArray>
+                )
             }
         })
     }
