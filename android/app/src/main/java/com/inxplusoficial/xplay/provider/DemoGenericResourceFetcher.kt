@@ -16,6 +16,7 @@ import retrofit2.Response
 import retrofit2.Retrofit
 import java.io.IOException
 
+@Suppress("UNCHECKED_CAST")
 class DemoGenericResourceFetcher : LynxGenericResourceFetcher() {
     override fun fetchResource(
         request: LynxResourceRequest?,

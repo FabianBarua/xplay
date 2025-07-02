@@ -6,7 +6,6 @@ package com.inxplusoficial.xplay.provider
 import com.lynx.tasm.provider.AbsTemplateProvider
 import okhttp3.ResponseBody
 import retrofit2.Call
-import retrofit2.Callback
 import retrofit2.Response
 import retrofit2.Retrofit
 import java.io.IOException
@@ -25,6 +24,7 @@ class DemoTemplateProvider : AbsTemplateProvider() {
                     if (response.body() != null) {
                         callback.onSuccess(response.body()!!.bytes())
                     } else {
+                        callback.onFailed("response body is null.")
                     }
                 } catch (e: IOException) {
                     e.printStackTrace()
